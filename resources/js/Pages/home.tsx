@@ -1,18 +1,9 @@
-export default function Home({data}:any){
-    console.log(data);
-    return(
+import Navbar from "@/components/navbar";
+
+export default function Home({ data }: any) {
+    return (
         <>
-        Ini halaman home
-        {data.map((i:any)=>(
-            <div>
-            <div>
-                {i.image}
-            </div>
-            <div>
-                {i.tag}
-            </div>
-            </div>
-        ))}
+            <Navbar />
         </>
-    )
+    );
 }
