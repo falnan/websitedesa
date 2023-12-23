@@ -1,15 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const menu = [
     {
-        name: "home",
-        link: "",
+        name: "Home",
+        link: "/",
         children: "",
     },
     {
-        name: "profil",
+        name: "Profil",
         link: "",
         children: [
+            {
+                name: "Sambutan",
+                link: "sambutan",
+            },
             {
                 name: "Visi & Misi",
                 link: "visi-misi",
@@ -18,15 +22,67 @@ const menu = [
                 name: "Struktur Pemerintahan",
                 link: "struktur-pemerintahan",
             },
+            {
+                name: "Peta Desa",
+                link: "peta-desa",
+            },
         ],
     },
     {
-        name: "informasi",
+        name: "Informasi",
         link: "",
         children: [
             {
+                name: "Pengumuman",
+                link: "pengumuan",
+            },
+            {
                 name: "KTP",
                 link: "ktp",
+            },
+            {
+                name: "KK",
+                link: "kk",
+            },
+            {
+                name: "Akta",
+                link: "akta",
+            },
+        ],
+    },
+    {
+        name: "Lembaga Desa",
+        link: "",
+        children: [
+            {
+                name: "Karang Taruna",
+                link: "karang-taruna",
+            },
+            {
+                name: "PKK",
+                link: "pkk",
+            },
+            {
+                name: "Bumdes",
+                link: "bumdes",
+            },
+        ],
+    },
+    {
+        name: "E-Doc",
+        link: "",
+        children: [
+            {
+                name: "Surat Menyurat",
+                link: "surat-menyurat",
+            },
+            {
+                name: "Undang-Undang",
+                link: "undang-undang",
+            },
+            {
+                name: "Perencanaan Pembangunan",
+                link: "perencanaan-pembangunan",
             },
         ],
     },
@@ -34,14 +90,44 @@ const menu = [
 
 export default function Navbar() {
     const [navbar, setNavbar] = useState({
-        profil: false,
-        informasi: false,
+        Profil: false,
+        Informasi: false,
+        "Lembaga Desa": false,
+        "E-Doc": false,
     });
     const [sidebar, setSidebar] = useState({
         burger: false,
-        profil: false,
-        informasi: false,
+        Profil: { active: false, height: 0 },
+        Informasi: { active: false, height: 0 },
+        "Lembaga Desa": { active: false, height: 0 },
+        "E-Doc": { active: false, height: 0 },
     });
+    const getHeight = useRef({
+        Profil: 0,
+        Informasi: 0,
+        "Lembaga Desa": 0,
+        "E-Doc": 0,
+    });
+
+    useEffect(() => {
+        //@ts-ignore
+        const Profil = getHeight.current.Profil.scrollHeight;
+        //@ts-ignore
+        const Informasi = getHeight.current.Informasi.scrollHeight;
+        //@ts-ignore
+        const Lembaga = getHeight.current["Lembaga Desa"].scrollHeight;
+        //@ts-ignore
+        const Doc = getHeight.current["E-Doc"].scrollHeight;
+
+        setSidebar((val) => ({
+            ...val,
+            Profil: { ...val.Profil, height: Profil },
+            Informasi: { ...val.Informasi, height: Informasi },
+            "Lembaga Desa": { ...val["Lembaga Desa"], height: Lembaga },
+            "E-Doc": { ...val["E-Doc"], height: Doc },
+        }));
+    }, []);
+
     function handleSidebar() {
         sidebar.burger
             ? setSidebar((val) => ({ ...val, burger: false }))
@@ -68,9 +154,9 @@ export default function Navbar() {
                         </div>
                     </div>
                 </div>
-                <div className="max-md:hidden flex flex-row gap-4">
-                    {menu.map((i: any) => (
-                        <div className="relative flex h-12">
+                <div className="max-md:hidden flex flex-row gap-6">
+                    {menu.map((i: any, index) => (
+                        <div key={index} className="relative flex h-16">
                             <div
                                 onMouseOver={() =>
                                     setNavbar((val) => ({
@@ -92,7 +178,7 @@ export default function Navbar() {
                                         height="16"
                                         width="14"
                                         viewBox="0 0 448 512"
-                                        className="fill-gray-500"
+                                        className="fill-gray-500 ml-1"
                                     >
                                         <path d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" />
                                     </svg>
@@ -114,10 +200,13 @@ export default function Navbar() {
                                                 [i.name]: false,
                                             }))
                                         }
-                                        className="absolute p-3 top-8 bg-white shadow-md rounded-md"
+                                        className="absolute p-3 top-16 bg-white shadow-md rounded-md"
                                     >
                                         {i.children.map((c: any) => (
-                                            <div className="text-nowrap">
+                                            <div
+                                                key={c.name}
+                                                className="text-nowrap"
+                                            >
                                                 {c.name}
                                             </div>
                                         ))}
@@ -171,18 +260,26 @@ export default function Navbar() {
                 >
                     <div className="flex flex-col p-4 gap-2 ">
                         {menu.map((i: any, index) => (
-                            <div className="border-b">
+                            <div key={index} className="border-b ">
                                 <div
                                     onClick={() =>
                                         // @ts-ignore
-                                        sidebar[i.name]
+                                        sidebar[i.name]["active"]
                                             ? setSidebar((val) => ({
                                                   ...val,
-                                                  [i.name]: false,
+                                                  [i.name]: {
+                                                      //@ts-ignore
+                                                      ...val[i.name],
+                                                      active: false,
+                                                  },
                                               }))
                                             : setSidebar((val) => ({
                                                   ...val,
-                                                  [i.name]: true,
+                                                  [i.name]: {
+                                                      //@ts-ignore
+                                                      ...val[i.name],
+                                                      active: true,
+                                                  },
                                               }))
                                     }
                                     className="flex justify-between items-center"
@@ -195,29 +292,45 @@ export default function Navbar() {
                                             viewBox="0 0 448 512"
                                             className={`${
                                                 //@ts-ignore
-                                                sidebar[i.name]
-                                                    ? "rotate-180"
+                                                sidebar[i.name]["active"]
+                                                    ? "-rotate-90"
                                                     : ""
-                                            } transition-transform `}
+                                            } transition-transform duration-500`}
                                         >
                                             <path d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" />
                                         </svg>
                                     )}
                                 </div>
-                                {i.children &&
-                                    i.children.map((c: any) => (
-                                        <div
-                                            className={`${
-                                                // @ts-ignore
-                                                sidebar[i.name]
-                                                    ? "max-h-64 duration-1000"
-                                                    : "max-h-0 duration-300"
-                                            } flex justify-between ml-4 items-center cursor-pointer transition-all overflow-hidden`}
-                                        >
-                                            <div>{c.name}</div>
-                                            {c.children && <div>yes</div>}
-                                        </div>
-                                    ))}
+                                <div
+                                    //@ts-ignore
+                                    ref={(element) =>
+                                        //@ts-ignore
+                                        (getHeight.current[i.name] = element)
+                                    }
+                                    className={`
+                                    ${
+                                        // @ts-ignore
+                                        sidebar[i.name]?.active
+                                            ? "h-[" +
+                                              // @ts-ignore
+                                              sidebar[i.name]["height"] +
+                                              "px]"
+                                            : "h-[0px]"
+                                    }
+                                            ml-4 bg-blue-500 transition-all duration-500 overflow-hidden
+                                    `}
+                                >
+                                    {i.children &&
+                                        i.children.map((c: any) => (
+                                            <div
+                                                key={c.name}
+                                                className="flex justify-between items-center cursor-pointer"
+                                            >
+                                                <div>{c.name}</div>
+                                                {c.children && <div>yes</div>}
+                                            </div>
+                                        ))}
+                                </div>
                             </div>
                         ))}
                     </div>
